@@ -1,0 +1,38 @@
+[
+  {
+    "family": "myapp-task",
+    "taskRoleArn": null,
+    "executionRoleArn": null,
+    "networkMode": "awsvpc",
+    "requiresCompatibilities": ["FARGATE"],
+    "cpu": "256",
+    "memory": "512",
+    "containerDefinitions": [
+      {
+        "name": "myapp",
+        "image": "004415581358.dkr.ecr.ap-south-1.amazonaws.com/myapp-vaishu:latest",
+        "portMappings": [
+          {
+            "containerPort": 3000,
+            "protocol": "tcp"
+          }
+        ],
+        "essential": true,
+        "environment": [
+          {
+            "name": "APP_VERSION",
+            "value": "1.0.0"
+          }
+        ],
+        "logConfiguration": {
+          "logDriver": "awslogs",
+          "options": {
+            "awslogs-group": "/ecs/myapp",
+            "awslogs-region": "ap-south-1",
+            "awslogs-stream-prefix": "ecs"
+          }
+        }
+      }
+    ]
+  }
+]
