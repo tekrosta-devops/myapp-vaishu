@@ -1,11 +1,6 @@
 FROM node:18-alpine
 WORKDIR /app
 
-COPY package*.json ./
-
-RUN npm config set registry https://registry.npmjs.org/
-RUN npm install --production --legacy-peer-deps
-
 COPY . .
 
 EXPOSE 3000
