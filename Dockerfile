@@ -4,8 +4,7 @@ WORKDIR /app
 
 COPY package*.json ./
 
-RUN npm install --production --legacy-peer-deps
-
+# DO NOT run npm install here
 COPY . .
 
 EXPOSE 3000
