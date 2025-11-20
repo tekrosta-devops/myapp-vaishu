@@ -1,8 +1,10 @@
 FROM node:18-alpine
 WORKDIR /app
 
-# No npm install inside Docker
-# Dependencies will be installed in CodeBuild
+COPY package*.json ./
+
+RUN npm config set registry https://registry.npmjs.org/
+RUN npm install --production --legacy-peer-deps
 
 COPY . .
 
