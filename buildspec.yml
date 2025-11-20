@@ -8,7 +8,10 @@ env:
 phases:
   install:
     commands:
-      - echo Installing NPM packages outside Docker...
+      - echo Using correct npm version...
+      - npm cache clean --force
+      - npm install -g npm@10
+      - echo Installing NPM packages...
       - npm install --legacy-peer-deps
 
   pre_build:
@@ -18,18 +21,15 @@ phases:
 
   build:
     commands:
-      - echo Copying node_modules for Docker context...
-      - cp -r node_modules ./   # CRITICAL FIX
+      - echo Copying node_modules into Docker build context...
+      - cp -r node_modules ./   # ESSENTIAL LINE
       - echo Building Docker image...
       - docker build -t $IMAGE_REPO_NAME:$CODEBUILD_RESOLVED_SOURCE_VERSION .
       - docker tag $IMAGE_REPO_NAME:$CODEBUILD_RESOLVED_SOURCE_VERSION 004415581358.dkr.ecr.ap-south-1.amazonaws.com/$IMAGE_REPO_NAME:$CODEBUILD_RESOLVED_SOURCE_VERSION
 
   post_build:
     commands:
-      - echo Pushing image to Amazon ECR...
+      - echo Pushing Docker image...
       - docker push 004415581358.dkr.ecr.ap-south-1.amazonaws.com/$IMAGE_REPO_NAME:$CODEBUILD_RESOLVED_SOURCE_VERSION
-      - printf '[{"name":"myapp","imageUri":"004415581358.dkr.ecr.ap-south-1.amazonaws.com/%s:%s"}]' $IMAGE_REPO_NAME $CODEBUILD_RESOLVED_SOURCE_VERSION > imagedefinitions.json
-
-artifacts:
-  files:
-    - imagedefinitions.json
+      - echo Writing imagedefinitions.json...
+      - printf '[{"name":"myapp","imageUri":"004415581358.dkr.ecr.ap-s]()
