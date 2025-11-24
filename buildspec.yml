@@ -2,11 +2,16 @@ version: 0.2
 
 env:
   variables:
+    AWS_ACCOUNT_ID: "004415581358"
     IMAGE_REPO_NAME: "myapp-vaishu"
     AWS_DEFAULT_REGION: "ap-south-1"
-    AWS_ACCOUNT_ID: "004415581358"
 
 phases:
+  install:
+    commands:
+      - echo Installing Node dependencies outside Docker...
+      - npm install --legacy-peer-deps --force
+
   pre_build:
     commands:
       - echo Logging in to Amazon ECR...
@@ -15,7 +20,7 @@ phases:
   build:
     commands:
       - echo Build started on `date`
-      - echo Building Docker image...
+      - echo Building Docker image with existing node_modules...
       - docker build -t $IMAGE_REPO_NAME:$CODEBUILD_RESOLVED_SOURCE_VERSION .
       - docker tag $IMAGE_REPO_NAME:$CODEBUILD_RESOLVED_SOURCE_VERSION $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$CODEBUILD_RESOLVED_SOURCE_VERSION
 
@@ -24,8 +29,7 @@ phases:
       - echo Build completed on `date`
       - echo Pushing image to Amazon ECR...
       - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$CODEBUILD_RESOLVED_SOURCE_VERSION
-
-      - echo Writing imagedefinitions.json...
+      - echo Writing imagedefinitions.json file...
       - printf '[{"name":"myapp","imageUri":"%s"}]' "$AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$CODEBUILD_RESOLVED_SOURCE_VERSION" > imagedefinitions.json
 
 artifacts:
