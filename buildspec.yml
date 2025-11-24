@@ -8,9 +8,13 @@ env:
 
 phases:
   install:
+    runtime-versions:
+      nodejs: 20
     commands:
       - echo Installing Node dependencies outside Docker...
-      - npm install --legacy-peer-deps --force
+      - npm config set registry https://registry.npmjs.org/
+      - npm cache clean --force
+      - npm install --legacy-peer-deps
 
   pre_build:
     commands:
