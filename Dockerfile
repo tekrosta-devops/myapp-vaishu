@@ -1,10 +1,12 @@
-FROM public.ecr.aws/docker/library/node:18-alpine
+FROM node:18-alpine
 
 WORKDIR /app
 
-COPY package*.json ./
+COPY package*.json .
 
-# DO NOT run npm install here
+RUN npm config set legacy-peer-deps true
+RUN npm install
+
 COPY . .
 
 EXPOSE 3000
