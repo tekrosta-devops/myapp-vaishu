@@ -7,17 +7,6 @@ env:
     AWS_DEFAULT_REGION: "ap-south-1"
 
 phases:
-  install:
-    runtime-versions:
-      nodejs: 20
-    commands:
-      - echo Installing Node dependencies outside Docker...
-      - npm config set registry https://registry.npmjs.org/
-      - npm cache verify
-      - npm cache clean --force
-      - npm set strict-ssl false
-      - npm install --legacy-peer-deps --force
-
   pre_build:
     commands:
       - echo Logging in to Amazon ECR...
@@ -26,7 +15,7 @@ phases:
   build:
     commands:
       - echo Build started on `date`
-      - echo Building Docker image with existing node_modules...
+      - echo Building Docker image...
       - docker build -t $IMAGE_REPO_NAME:$CODEBUILD_RESOLVED_SOURCE_VERSION .
       - docker tag $IMAGE_REPO_NAME:$CODEBUILD_RESOLVED_SOURCE_VERSION $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$CODEBUILD_RESOLVED_SOURCE_VERSION
       - docker tag $IMAGE_REPO_NAME:$CODEBUILD_RESOLVED_SOURCE_VERSION $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:latest
@@ -34,10 +23,8 @@ phases:
   post_build:
     commands:
       - echo Build completed on `date`
-      - echo Pushing image to Amazon ECR...
       - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$CODEBUILD_RESOLVED_SOURCE_VERSION
       - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:latest
-      - echo Writing imagedefinitions.json file...
       - printf '[{"name":"myapp","imageUri":"%s"}]' "$AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$CODEBUILD_RESOLVED_SOURCE_VERSION" > imagedefinitions.json
 
 artifacts:
